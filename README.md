@@ -1,4 +1,4 @@
-# NJ_Beach_Weather_Tracker
+# NJ_Beach_Tracker
 Help people find the best beach on any given day.
 
 New Jersey (NJ) has nearly 50 beaches along its coast - all with varying forecasts. 

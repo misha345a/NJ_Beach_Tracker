@@ -13,3 +13,43 @@ app.use(express.static("public_html"));
 app.listen(port, () => {
     console.log(`Starting server at: ${port}`);
 });
+
+app.get("/forecast", function (req, res) {
+  res.json({
+  "draw": 1,
+  "recordsTotal": 57,
+  "recordsFiltered": 57,
+  "data": [
+    [
+      "#",
+      "#",
+      "#",
+      "#",
+      "#",
+      "#",
+      "#",
+      "#"
+    ],
+    [
+     "#",
+     "#",
+     "#",
+     "#",
+     "#",
+     "#",
+     "#",
+     "#"
+   ],
+   [
+     "#",
+     "#",
+     "#",
+     "#",
+     "#",
+     "#",
+     "#",
+     "#"
+   ],
+  ]})
+}
+)

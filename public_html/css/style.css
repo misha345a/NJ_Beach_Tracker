@@ -33,16 +33,22 @@ body {
 
 /*============= ZIP CODE INPUT =============*/
 
-.form-control {
-  width: 6rem;
+#inlineFormInput {
+  width: 14rem;
 }
-
 
 /*===== FIXED BACKGROUND IMG =====*/
 
 .fixed-background {
   overflow: hidden; /*-- Correction for iOS --*/
 }
+
+
+/*============= SPACING =============*/
+
+.top-buffer1 { margin-top:1%; }
+.top-buffer2 { margin-top:2%; }
+
 
 /*============= FOOTER =============*/
 

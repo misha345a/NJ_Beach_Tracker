@@ -18,7 +18,7 @@ body {
   z-index: 1;
 }
 
-.container {
+#nav-container {
   border: 2px dashed red;
 }
 
@@ -31,24 +31,46 @@ body {
   color: red!important;
 }
 
-/*============= ZIP CODE INPUT =============*/
+/*============= DROPDOWN FILTER =============*/
+#categoryFilter {
+  display: inline;
+  width: 190px;
+  margin-left: 25px;
+  height: 34px;
+  font-size: 10.5pt;
+}
 
+/*============= ZIP CODE INPUT =============*/
 #inlineFormInput {
   width: 14rem;
 }
 
-/*===== FIXED BACKGROUND IMG =====*/
-
+/*===== IMAGES =====*/
 .fixed-background {
   overflow: hidden; /*-- Correction for iOS --*/
 }
 
+.icon_images {
+  max-width: 25%;
+  height: auto;
+  overflow: hidden;
+}
+
+.image-txt-container {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+}
+
+#img_Beach-BirdsEye {
+  max-width: 110%;
+  height: auto;
+  overflow: hidden;
+}
 
 /*============= SPACING =============*/
-
-.top-buffer1 { margin-top:1%; }
+.top-buffer1 { margin-top:2%; }
 .top-buffer2 { margin-top:2%; }
-
 
 /*============= FOOTER =============*/
 

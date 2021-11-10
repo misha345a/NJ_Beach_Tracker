@@ -13,13 +13,14 @@
   <link rel="stylesheet" href="css/style.css">
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700&display=swap" rel="stylesheet">
+
 </head>
 
 <body>
 
   <!-- NAVIGATION -->
   <nav class="navbar bg-light navbar-light navbar-expand-lg">
-    <div class="container">
+    <div class="container" id="nav-container">
 
         <a href="index.html" class="navbar-brand"><img src="img/logo.PNG"
           alt="Logo" title="Logo"></a>
@@ -56,69 +57,186 @@
     </div>
   </form>
 
-  <div class="top-buffer2"></div>
+<div class="top-buffer1"></div>
+
+<div class="category-filter">
+  <label id="categoryFilterLabel" style="display: none;">  Select Day:
+    <select id="categoryFilter" class="form-select"></select>
+  </label>
+</div>
+
+<script>
+
+// Compile a list of the next 5 days;
+// this will be appended to the dropdown menu
+function createWeekdays() {
+
+  const weekday = new Array(7);
+  weekday[0] = "Sunday";
+  weekday[1] = "Monday";
+  weekday[2] = "Tuesday";
+  weekday[3] = "Wednesday";
+  weekday[4] = "Thursday";
+  weekday[5] = "Friday";
+  weekday[6] = "Saturday";
+
+  let dateArr = [];
+
+  for (let i=0; i<5; i++) {
+    let d = new Date();
+    d.setDate(d.getDate() + i);
+
+    let dayNum = d.getDate();
+    let dayOfTheWeek = weekday[d.getDay()];
+
+    dateArr.push(dayNum + ' ' + dayOfTheWeek);
+  }
+  return dateArr
+}
+
+let dateOptions = createWeekdays();
+
+let str = ""
+for (var item of dateOptions) {
+  str += `<option value="${item}">${item}</option>`;
+}
+
+document.getElementById("categoryFilter").innerHTML = str;
+
+</script>
+
+  <div class="top-buffer1"></div>
   <div class="wide comments example dt-example-bootstrap5">
     <div class="container-md">
       <table id="example" class="table table-striped table-hover table-light" style="width:100%">
             <thead>
                 <tr>
-                    <th>Beach</th>
-                    <th>Day</th>
-                    <th>Morning</th>
-                    <th>Afternoon</th>
-                    <th>Description</th>
-                    <th>Chance of Rain</th>
-                    <th>Wind Speed</th>
-                    <th>UVI</th>
+                    <th scope="col">Beach</th>
+                    <th scope="col">Day</th>
+                    <th scope="col">Morning</th>
+                    <th scope="col">Afternoon</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Chance of Rain</th>
+                    <th scope="col">Wind Speed</th>
+                    <th scope="col">UV Index</th>
                 </tr>
             </thead>
         </table>
     </div>
   </div>
 
-  <!-- TABLE -->
-  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/css/bootstrap.min.css">
-  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.1/css/dataTables.bootstrap5.min.css">
+<!-- TABLE -->
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.1/css/dataTables.bootstrap5.min.css">
 
-  <script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-  <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.11.1/js/jquery.dataTables.min.js"></script>
-  <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.11.1/js/dataTables.bootstrap5.min.js"></script>
-  <script type="text/javascript" class="init">
+<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.11.1/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.11.1/js/dataTables.bootstrap5.min.js"></script>
+<script type="text/javascript" class="init">
 
-// ___________________________________________________________________
 
-  $(document).ready(function() {
-      $('#example').DataTable({
-          "lengthMenu": [ [5, 10, 20, -1], [5, 10, 20, "All"] ],
-          paging: true,
-          "pagingType": "simple",
-          scrollY: 300,
-          scrollCollapse: true,
-          order: [[ 1, 'asc' ], [2, 'asc' ]],
-                  columns: [
-                      { title: "Beach" },
-                      { title: "Day" },
-                      { title: "Morning" },
-                      { title: "Afternoon" },
-                      { title: "Description" },
-                      { title: "Chance of Rain" },
-                      { title: "Wind Speed" },
-                      { title: "UVI" },
-                    ],
-          ajax: {
-            url: "/forecast",
-          }
-      })
+$(document).ready(function() {
+
+    // Create a new DataTable object
+    $('#example').DataTable({
+        "lengthMenu": [ [5, 10, 20, -1], [5, 10, 20, "All"] ],
+        paging: true,
+        "pagingType": "simple",
+        scrollY: 300,
+        scrollCollapse: true,
+        searching: true, //
+        order: [[ 1, 'asc' ], [2, 'asc' ]],
+                columns: [
+                    { title: "Beach" },
+                    { title: "Day" },
+                    { title: "Morning" },
+                    { title: "Afternoon" },
+                    { title: "Description" },
+                    { title: "Chance of Rain" },
+                    { title: "Wind Speed" },
+                    { title: "UV Index" },
+                  ],
+        ajax: {
+          url: "/forecast",
+        }
+    })
+
+    // Define a reference to the datatable
+    var table = $('#example').DataTable();
+
+    // Append the category filter drop down to the datatables div (and make it visible)
+    $("#example_filter.dataTables_filter").append($("#categoryFilterLabel"));
+    document.getElementById("categoryFilterLabel").style.display = "inline";
+
+    // Retrieve the column index for the Day column
+    var categoryIndex = 0;
+    $("#example th").each(function (i) {
+      if ($($(this)).text() == "Day") {
+        categoryIndex = i; return false;
+      }
+    });
+
+    // Filter the existing rows by the Day column using the built in datatables API
+    $.fn.dataTable.ext.search.push(
+      function (settings, data, dataIndex) {
+        var selectedItem = $('#categoryFilter').val()
+        var category = data[categoryIndex];
+        if (category.includes(selectedItem)) {
+          return true;
+        }
+        return false;
+      }
+    );
+
+    // Redraw the datatable each time a user selects a new filter
+    $("#categoryFilter").change(function (e) {
+      table.draw();
+    });
+
+    table.draw();
   });
+
   </script>
 
+  <div class="top-buffer2"></div>
+  <div class="container">
+    <hr>
+    <h5 style="color:#BE0000;">Below is a guide to help you better sort through the forecasts</h5>
+    <div class="top-buffer1"></div>
+    <p>
+      <b><u>Air Temperature</u></b><br>
+      Morning temperature is forecast for 6am-Noon EST, and Afternoon for Noon-6pm EST. <br>
+      All temperatures are expressed as "feels-like" temperature, which takes into account humidity levels.
+      <br><br>
+      85-90&deg;F is said to be the perfect beach temperature. <br>
+      Generally, anything below 75&deg;F will be too chilly for a normal shorts and t-shirt beach day,
+      especially if it is cloudy as well.
+      <br><br>
+      <b><u>Ocean Temperature</u></b><br>
+      The ocean temperature is derived by averaging the next few days of Atlantic Ocean temperatures near the Atlantic City coast. <br>
+      For comfortable swimming at the beach, ocean temperature should be above 75&deg;F. <br>
+      Historically, beach waters will be warmest in July and August.
+      <br><br>
+      <b><u>Chance of Rain</u></b><br>
+      This metric simply describes the probability of the region receiving precipitation. <br>
+      So a chance of rain between 40-60% indicates potentially scattered rainfall in the area.
+      <br><br>
+      <b><u>Wind</u></b><br>
+      Wind speeds between 0-10 mph are ideal for the average beachgoer, who simply enjoys calmness and gentle breezes. <br>
+      Wind speeds greater than 10 mph will consist of moderate to strong breezes, which may be more suitable for flying kites and surfing.
+      <br><br>
+      <b><u>UV Index</u></b><br>
+      UV numbers will typically range from 1 to 11. The higher the UV index, the faster your skin can burn. <br>
+      UV indexes that are moderate (3-5) to high (6-7) may be best for tanning purposes.
+    </p>
+  </div>
 
   <!-- -------------------------------------------------------------->
   <!-- Script Source Files -->
 
 	<!-- jQuery -->
 	<!-- <script src="js/jquery-3.5.1.min.js"></script> -->
-	<!-- Bootstrap 4.5 JS -->
+	<!-- Bootstrap 5 JS -->
 	<script src="js/bootstrap.min.js"></script>
 	<!-- Popper JS -->
 	<!-- <script src="js/popper.min.js"></script> -->

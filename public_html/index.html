@@ -100,6 +100,7 @@ let str = ""
 for (var item of dateOptions) {
   str += `<option value="${item}">${item}</option>`;
 }
+str += '<option value="">Show All</option>'; // add a show all option
 
 document.getElementById("categoryFilter").innerHTML = str;
 
@@ -144,18 +145,18 @@ $(document).ready(function() {
         "pagingType": "simple",
         scrollY: 300,
         scrollCollapse: true,
-        searching: true, //
+        searching: true,
         order: [[ 1, 'asc' ], [2, 'asc' ]],
-                columns: [
-                    { title: "Beach" },
-                    { title: "Day" },
-                    { title: "Morning" },
-                    { title: "Afternoon" },
-                    { title: "Description" },
-                    { title: "Chance of Rain" },
-                    { title: "Wind Speed" },
-                    { title: "UV Index" },
-                  ],
+            columns: [
+                { title: "Beach" },
+                { title: "Day" },
+                { title: "Morning" },
+                { title: "Afternoon" },
+                { title: "Description" },
+                { title: "Chance of Rain" },
+                { title: "Wind Speed" },
+                { title: "UV Index" },
+              ],
         ajax: {
           url: "/forecast",
         }

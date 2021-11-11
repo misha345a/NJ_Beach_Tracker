@@ -42,7 +42,6 @@ const url_Atlantic_City_Beach = `https://api.openweathermap.org/data/2.5/onecall
 const url_Ideal_Beach = `https://api.openweathermap.org/data/2.5/onecall?lat=40.4448&lon=-74.1119&exclude=current,minutely,alerts&units=imperial&appid=${process.env.OPENWEATHER_API_KEY}`;
 const url_Beach_Haven= `https://api.openweathermap.org/data/2.5/onecall?lat=39.5593&lon=-74.2432&exclude=current,minutely,alerts&units=imperial&appid=${process.env.OPENWEATHER_API_KEY}`;
 
-
 //_________________________________________
 
 app.listen(port, () => {
@@ -50,41 +49,64 @@ app.listen(port, () => {
 });
 
 app.get("/forecast", function (req, res) {
-  res.json({
-  "draw": 1,
-  "recordsTotal": 57,
-  "recordsFiltered": 57,
-  "data": [
-    [
-      "#",
-      "#",
-      "#",
-      "#",
-      "#",
-      "#",
-      "#",
-      "#"
-    ],
-    [
-     "#",
-     "#",
-     "#",
-     "#",
-     "#",
-     "#",
-     "#",
-     "#"
-   ],
-   [
-     "#",
-     "#",
-     "#",
-     "#",
-     "#",
-     "#",
-     "#",
-     "#"
-   ],
-  ]})
-}
-)
+
+  // execute simultaneous requests
+  axios.all([
+    axios.get(url_Brigantine_Beach),
+    axios.get(url_Atlantic_City_Beach),
+    axios.get(url_Ideal_Beach),
+    axios.get(url_Beach_Haven),
+  ])
+  .then(response => {
+    console.log("Success! Status code was 200 level.");
+
+    let beachNameList = [
+      "Brigantine Beach",
+      "Atlantic City Beach",
+      "Ideal Beach",
+      "Beach Haven",
+    ];
+
+    // loop through each beach's API call
+    let dataList = [];
+    
+    for (let i=0; i<beachNameList.length; i++) {
+      // and define variables over multiple days
+      for (let j=0; j<5; j++) {
+        let beachName = beachNameList[i];
+        let date = convertUnixUTC(response[i].data.daily[j].dt);
+        let feelsLikeMorn = response[i].data.daily[j].feels_like.morn;
+        let feelsLikeDay = response[i].data.daily[j].feels_like.day;
+        let description = response[i].data.daily[j].weather[0].description;
+        let pop = response[i].data.daily[j].pop;
+        let windSpeed = response[i].data.daily[j].wind_speed;
+        let uvi = response[i].data.daily[j].uvi;
+
+        let responseList = [
+          beachName,
+          date,
+          feelsLikeMorn,
+          feelsLikeDay,
+          description,
+          pop,
+          windSpeed,
+          uvi
+        ];
+        responseList = adjustFormatting(responseList); // reformatted
+        dataList.push(responseList);
+      }
+    }
+
+    // send the collected API data back to the client-side
+    res.json({
+      "draw": 1,
+      "recordsTotal": 90,
+      "recordsFiltered": 90,
+      "data": dataList
+    })
+  })
+  .catch(function (error) {
+    //handle errors
+    console.log("Error! Status code was 300, 400, or 500-level.");
+  });
+})

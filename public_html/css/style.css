@@ -46,9 +46,9 @@ body, h5, p, {
   margin-left: 15px;
 }
 
-/*============= ZIP CODE INPUT =============*/
+/*============= ADDRESS INPUT =============*/
 #inlineFormInput {
-  width: 14rem;
+  width: 18rem;
 }
 
 /*===== IMAGES =====*/

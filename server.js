@@ -27,12 +27,12 @@ function toTitleCase(str) {
 
 // format the data before sending it to the client-side
 function adjustFormatting(arr) {
-  arr[2] = Math.round(arr[2])+'°F'; // round feelsLikeMorn
-  arr[3] = Math.round(arr[3])+'°F'; // round feelsLikeDay
-  arr[4] = toTitleCase(arr[4]); // title case description
-  arr[5] = Math.round(arr[5])+'%'; // round percentage of precipitation
-  arr[6] = Math.round(arr[6])+' mph'; // round wind speeds
-  arr[7] = arr[7].toFixed(1); // round UV Index to tenths
+  arr[3] = Math.round(arr[3])+'°F'; // round feelsLikeMorn
+  arr[4] = Math.round(arr[4])+'°F'; // round feelsLikeDay
+  arr[5] = toTitleCase(arr[5]); // title case description
+  arr[6] = Math.round(arr[6])+'%'; // round percentage of precipitation
+  arr[7] = Math.round(arr[7])+' mph'; // round wind speeds
+  arr[8] = arr[8].toFixed(1); // round UV Index to tenths
   return arr
 }
 
@@ -82,8 +82,10 @@ app.get("/forecast", function (req, res) {
         let windSpeed = response[i].data.daily[j].wind_speed;
         let uvi = response[i].data.daily[j].uvi;
 
+        let travelTime = "";
         let responseList = [
           beachName,
+          travelTime,
           date,
           feelsLikeMorn,
           feelsLikeDay,

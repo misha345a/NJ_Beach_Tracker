@@ -56,6 +56,11 @@ body, h5, p, {
   overflow: hidden; /*-- Correction for iOS --*/
 }
 
+.titleIcons {
+  max-width: 3%;
+  height: auto;
+}
+
 .icon_images {
   max-width: 25%;
   height: auto;

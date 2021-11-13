@@ -47,7 +47,7 @@
     <div class="container-md">
     <!-- <div class="mt-3 form-row align-items-center"> -->
       <!-- <div class="col-lg-2"> -->
-        <label class="sr-only" for="inlineFormInput">Enter your address to populate travel times:</label>
+        <label class="sr-only" for="inlineFormInput">Enter your address to populate driving times:</label>
 
       <!-- </div> -->
       <div class="col-auto">
@@ -115,7 +115,7 @@ document.getElementById("categoryFilter").innerHTML = str;
             <thead>
                 <tr>
                     <th scope="col">Beach</th>
-                    <th scope="col">Travel Time</th>
+                    <th scope="col">Driving Time</th>
                     <th scope="col">Day</th>
                     <th scope="col">Morning</th>
                     <th scope="col">Afternoon</th>
@@ -152,7 +152,7 @@ $(document).ready(function() {
         order: [[ 1, 'desc' ], [2, 'desc' ]],
             columns: [
                 { title: "Beach" },
-                { title: "Travel Time" },
+                { title: "Driving Time" },
                 { title: "Day" },
                 { title: "Morning" },
                 { title: "Afternoon" },
@@ -197,7 +197,7 @@ $(document).ready(function() {
     $("#categoryFilter").change(function (e) {
       tableElement.draw();
     });
-
+  // Call draw() to update the table's draw state with the new data
   tableElement.draw();
 });
 
@@ -206,14 +206,12 @@ $(document).ready(function() {
 // Loop through the Driving Time column cells and update values
 function populateDrivingTime (dict) {
 
-  // Get the beach name from column 1 and update cells with travel times
+  // Get the beach name from column 1 and update cells with driving times
   for (let i=0; i<table.rows().count(); i++) {
     let beachName = table.cell(i,0).data()
 
     table.cell(i, 1).data(dict[beachName])
   }
-  
-// Call draw() to update the table's draw state with the new data
 table.draw();
 }
 

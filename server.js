@@ -32,7 +32,7 @@ function adjustFormatting(arr) {
   arr[5] = toTitleCase(arr[5]); // title case description
   arr[6] = Math.round(arr[6])+'%'; // round percentage of precipitation
   arr[7] = Math.round(arr[7])+' mph'; // round wind speeds
-  arr[8] = arr[8].toFixed(1); // round UV Index to tenths
+  arr[8] = Math.round(arr[8]); // round UV Index 
   return arr
 }
 

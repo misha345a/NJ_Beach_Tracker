@@ -168,11 +168,6 @@ app.get("/map", function (req, res) {
     ])
     .then(responseArr => {
 
-      // check if response exists
-      if (isNaN(responseArr) || responseArr.length == 0) {
-        throw "Driving times were not found from this origin.";
-      }
-
       let beachNameList = [
         "Brigantine Beach",
         "Atlantic City Beach",
@@ -196,7 +191,7 @@ app.get("/map", function (req, res) {
     .catch(function (error) {
         //handle errors
         console.log("Error! Status code was 300, 400, or 500-level.");
-        res.json({"error": error});
+        res.json({"error": "Driving times were not found from this origin."});
     });
 
 })

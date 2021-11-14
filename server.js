@@ -143,7 +143,7 @@ app.get("/map", function (req, res) {
 
     // check if response exists
     if (response.features.length == 0) {
-      throw "This address was not found.";
+      throw "This address was not found. Try again.";
     }
 
     let geoCoordinates = response.features[0].geometry.coordinates;

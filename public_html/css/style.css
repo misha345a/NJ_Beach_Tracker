@@ -33,6 +33,11 @@ body, h5, p, {
   color: red!important;
 }
 
+/*============= ADDRESS SUBMISSION =============*/
+#submitButton {
+  margin-left: 5px;
+}
+
 /*============= DROPDOWN FILTER =============*/
 #categoryFilter {
   display: inline;
@@ -56,9 +61,10 @@ body, h5, p, {
   overflow: hidden; /*-- Correction for iOS --*/
 }
 
-.titleIcons {
+.headerIcons {
   max-width: 3%;
   height: auto;
+  margin-left: 2px;
 }
 
 .icon_images {

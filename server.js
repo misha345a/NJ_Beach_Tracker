@@ -119,76 +119,90 @@ app.get("/forecast", function (req, res) {
 // DRIVING TIMES (MABPOX)
 app.get("/map", function (req, res) {
 
-  // retrieve the user's address from the client side
+  // retieve the user's address from the client side
   let address = req.query['address'];
 
   // encode the address text as a URL-encoded UTF-8 string
   let encodedAddress = encodeURI(address.trim());
 
-  let url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedAddress}.json?access_token=${process.env.MAPBOX_API_KEY}`
+  let url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedAddress}.json?country=us&limit=1&proximity=-74.4229%2C39.3643&types=address&access_token=${process.env.MAPBOX_API_KEY}`
 
-  // retrieve the origin's geographic coordinates
+  // retrieve the origin's coordinates from the Mapbox API using Axios
   async function axiosTest() {
-        try {
-          const {data:response} = await axios.get(url)
-          return response
-        }
-
-        catch (error) {
-          console.log(error);
-        }
-      }
+    try {
+      const {data:response} = await axios.get(url)
+      return response
+    }
+    catch (error) {
+      console.log(error);
+    }
+  }
 
   // longitude/latitude data is required for the Mapbox Directions API requests
   axiosTest().then(response => {
-  let geoCoordinates = response.features[0].geometry.coordinates;
-  let longitude = geoCoordinates[0];
-  let latitude = geoCoordinates[1];
 
-  // here are the Mapbox Directions API requests for each beach
-  // the start will always be the user's address location; only the destination changes based on the beach location
-  let url_map_Brigantine_Beach = `https://api.mapbox.com/directions/v5/mapbox/driving-traffic/${longitude},${latitude};-74.3668,39.4021?geometries=geojson&access_token=${process.env.MAPBOX_API_KEY}`;
-  let url_map_Atlantic_City_Beach = `https://api.mapbox.com/directions/v5/mapbox/driving-traffic/${longitude},${latitude};-74.4158,39.3755?geometries=geojson&access_token=${process.env.MAPBOX_API_KEY}`;
-  let url_map_Ideal_Beach = `https://api.mapbox.com/directions/v5/mapbox/driving-traffic/${longitude},${latitude};-74.1119,40.4448?geometries=geojson&access_token=${process.env.MAPBOX_API_KEY}`;
-  let url_map_Beach_Haven = `https://api.mapbox.com/directions/v5/mapbox/driving-traffic/${longitude},${latitude};-74.2432,39.5593?geometries=geojson&access_token=${process.env.MAPBOX_API_KEY}`;
-
-  // execute the Mapbox Directions API requests to retrieve the driving-traffic profiles
-  axios.all([
-    axios.get(url_map_Brigantine_Beach),
-    axios.get(url_map_Atlantic_City_Beach),
-    axios.get(url_map_Ideal_Beach),
-    axios.get(url_map_Beach_Haven),
-  ])
-  .then(responseArr => {
-    let beachNameList = [
-      "Brigantine Beach",
-      "Atlantic City Beach",
-      "Ideal Beach",
-      "Beach Haven",
-    ];
-
-    // format the driving times into minutes
-    let durationsDict = {};
-    for (let i=0; i<responseArr.length; i++) {
-      let tripDuration = responseArr[i].data.routes[0].duration_typical;
-      tripDuration = Math.round(Number(tripDuration)/60) + " min";
-      durationsDict[beachNameList[i]] = tripDuration; // add 'Brigantine Beach':'97 min' pairs
+    // check if response exists
+    if (response.features.length == 0) {
+      throw "This address was not found.";
     }
-    durationsDict["error"] = "No Error";
 
-    // send the collected API data back to the client-side
-    res.json(durationsDict);
-  })
-  .catch(function (error) {
-      //handle errors
-      console.log("Error! Status code was 300, 400, or 500-level.");
-      // res.json({"error": "geocodes not found"});
-  });
+    let geoCoordinates = response.features[0].geometry.coordinates;
+    let longitude = geoCoordinates[0];
+    let latitude = geoCoordinates[1];
+
+    let foundAddress = response.features[0].place_name;
+
+    // here are the Mapbox Directions API requests for each beach
+    // the start will always be the user's address; only the end or destination will change based on beach location
+    let url_map_Brigantine_Beach = `https://api.mapbox.com/directions/v5/mapbox/driving-traffic/${longitude},${latitude};-74.3668,39.4021?geometries=geojson&access_token=${process.env.MAPBOX_API_KEY}`;
+    let url_map_Atlantic_City_Beach = `https://api.mapbox.com/directions/v5/mapbox/driving-traffic/${longitude},${latitude};-74.4158,39.3755?geometries=geojson&access_token=${process.env.MAPBOX_API_KEY}`;
+    let url_map_Ideal_Beach = `https://api.mapbox.com/directions/v5/mapbox/driving-traffic/${longitude},${latitude};-74.1119,40.4448?geometries=geojson&access_token=${process.env.MAPBOX_API_KEY}`;
+    let url_map_Beach_Haven = `https://api.mapbox.com/directions/v5/mapbox/driving-traffic/${longitude},${latitude};-74.2432,39.5593?geometries=geojson&access_token=${process.env.MAPBOX_API_KEY}`;
+
+    // execute the Mapbox Directions API requests to retrieve the driving-traffic profiles
+    axios.all([
+      axios.get(url_map_Brigantine_Beach),
+      axios.get(url_map_Atlantic_City_Beach),
+      axios.get(url_map_Ideal_Beach),
+      axios.get(url_map_Beach_Haven),
+    ])
+    .then(responseArr => {
+
+      // check if response exists
+      if (isNaN(responseArr) || responseArr.length == 0) {
+        throw "Driving times were not found from this origin.";
+      }
+
+      let beachNameList = [
+        "Brigantine Beach",
+        "Atlantic City Beach",
+        "Ideal Beach",
+        "Beach Haven",
+      ];
+
+      let durationsDict = {};
+
+      // format the driving times into minutes
+      for (let i=0; i<responseArr.length; i++) {
+        let tripDuration = responseArr[i].data.routes[0].duration_typical;
+        tripDuration = Math.round(Number(tripDuration)/60) + " min";
+        durationsDict[beachNameList[i]] = tripDuration; // adds pairs in this format: 'Brigantine Beach':'97 min'
+      }
+      durationsDict['address'] = "Found address at " + foundAddress;
+
+      // send the collected API data back to the client-side
+      res.json(durationsDict);
+    })
+    .catch(function (error) {
+        //handle errors
+        console.log("Error! Status code was 300, 400, or 500-level.");
+        res.json({"error": error});
+    });
 
 })
 .catch(function (error) {
-//     //handle errors
+    //handle errors
     console.log("Error! Status code was 300, 400, or 500-level.");
-//     // res.json({"error": "geocodes not found"});
-});
+    res.json({"error": error});
+  });
 })

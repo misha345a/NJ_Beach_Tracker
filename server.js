@@ -42,7 +42,7 @@ const url_Atlantic_City_Beach = `https://api.openweathermap.org/data/2.5/onecall
 const url_Ideal_Beach = `https://api.openweathermap.org/data/2.5/onecall?lat=40.4448&lon=-74.1119&exclude=current,minutely,alerts&units=imperial&appid=${process.env.OPENWEATHER_API_KEY}`;
 const url_Beach_Haven= `https://api.openweathermap.org/data/2.5/onecall?lat=39.5593&lon=-74.2432&exclude=current,minutely,alerts&units=imperial&appid=${process.env.OPENWEATHER_API_KEY}`;
 
-//_________________________________________
+//____________________________________________________________________________
 
 app.listen(port, () => {
     console.log(`Starting server at: ${port}`);
@@ -114,7 +114,7 @@ app.get("/forecast", function (req, res) {
   });
 })
 
-// ---------------------------------------------------
+//____________________________________________________________________________
 
 // DRIVING TIMES (MABPOX)
 app.get("/map", function (req, res) {
@@ -201,3 +201,53 @@ app.get("/map", function (req, res) {
     res.json({"error": error});
   });
 })
+
+//____________________________________________________________________________
+
+let url_oceanTemp = `https://api.stormglass.io/v2/weather/point?lat=39.3696&lng=-74.4017&params=waterTemperature&source=noaa&key=${process.env.STORMGLASS_API_KEY}`
+
+// convert Celsius to Fahrenheit
+function cToF(celsius) {
+  var cTemp = celsius;
+  var cToFahr = cTemp * 9/5 + 32;
+  return cToFahr;
+}
+
+// calculate the average of an array
+function calculateAverage(array) {
+    var total = 0;
+    var count = 0;
+
+    array.forEach(function(item) {
+        total += item;
+        count++;
+    });
+    return total/count;
+}
+
+app.get("/ocean", function (req, res) {
+  axios.get(url_oceanTemp)
+  .then(response => {
+    if (response.status != 200) {
+      throw "Feature currently unavailable. Please try again later.";
+    }
+
+    let waterTemps = [];
+    let avgWaterTemp;
+
+    // average an array of the next 48 hours of forecast water temps
+    for (let i=1; i<=48; i++) {
+      waterTemps.push(response.data.hours[i].waterTemperature.noaa);
+    }
+
+    avgWaterTemp = cToF(calculateAverage(waterTemps));
+    avgWaterTemp = Math.round(avgWaterTemp)+'\xB0F';
+
+    res.json({'oceanTemp':avgWaterTemp});
+  })
+  .catch(function (error) {
+    //handle errors
+    res.json({"error": error});
+  });
+})
+

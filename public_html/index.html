@@ -23,7 +23,7 @@
     <div class="container" id="nav-container">
 
         <a href="index.html" class="navbar-brand"><img src="img/logo.PNG"
-          alt="Logo" title="Logo"></a>
+          alt="Logo" title="Logo" id="logo"></a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
           data-bs-target="#navbarResponsive">
@@ -50,10 +50,10 @@
       <div class="col-auto">
         <input type="text" class="form-control-sm" id="inlineFormInput" placeholder="205 n 34 st philadelphia pa 19104" required>
         <input type="submit" class="btn btn-warning btn-md" id="submitButton">
-        <span id="oceanTempSpan">Expected Ocean Temperature: <a id="oceanTempVal"></a></span>
+        <span id="oceanTempSpan">Expected Ocean Temperature:&nbsp;<a id="oceanTempVal">&nbsp;&nbsp;&nbsp;&nbsp;</a></span>
       </div>
       <div>
-        <span style="font-size:11pt; visibility:hidden;" id='alertMessage'>Error</span>
+        <span style="font-size:11pt; visibility:hidden;" id='alertMessage'></span>
       </div>
     </div>
   </form>
@@ -62,7 +62,7 @@
 
 <!-- DROPDOWN MENU -->
 <div class="category-filter">
-  <label id="categoryFilterLabel" style="display: none;">  Select Day:
+  <label id="categoryFilterLabel" style="display: none;"> Select Day:
     <select id="categoryFilter" class="form-select"></select>
   </label>
 </div>
@@ -130,6 +130,10 @@ document.getElementById("categoryFilter").innerHTML = str;
     </div>
   </div>
 
+  <div class="container">
+    <span style="font-size:14pt; color:red; visibility:hidden;" id='errorMessage'></span>
+  </div>
+
 <!-- TABLE -->
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.1/css/dataTables.bootstrap5.min.css">
@@ -139,18 +143,35 @@ document.getElementById("categoryFilter").innerHTML = str;
 <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.11.1/js/dataTables.bootstrap5.min.js"></script>
 <script type="text/javascript" class="init">
 
+// Display an error message when the DataTable ajax request fails
+let errorMessage = document.getElementById('errorMessage');
+function datatableError(text) {
+  errorMessage.innerText = text;
+  errorMessage.style.visibility = "visible";
+  table.destroy();
+}
 
 $(document).ready(function() {
 
-    // Create a new DataTable object
-    table = $('#example').DataTable({
-        "lengthMenu": [ [5, 10, 20, -1], [5, 10, 20, "All"] ],
+  // Turn off the default error alert
+  $.fn.dataTable.ext.errMode = 'none';
+
+  // Create a new DataTable object
+  table = $('#example')
+   // Implement a custom error handler
+   .on('error.dt', function (e, settings, techNote, message) {
+   	console.log('An error has been reported by DataTables: ', message);
+	message = message.replace('DataTables warning: table id=example -', '');
+	datatableError(message);
+   })
+   .DataTable({
+        "lengthMenu": [ [10, 20, -1], [10, 20, "All"] ],
         paging: true,
         "pagingType": "simple",
         scrollY: 400,
         scrollCollapse: true,
         searching: true,
-        order: [[ 1, 'desc' ], [2, 'desc' ]],
+        order: [[ 1, 'desc' ], [4, 'desc' ]],
             columns: [
                 { title: "Beach" },
                 { title: "Driving Time" },
@@ -163,9 +184,10 @@ $(document).ready(function() {
                 { title: "UV Index" },
               ],
         ajax: {
+          dataType: "JSON",
           url: "/forecast",
         }
-    })
+    });
 
     // Define a reference to the DataTable
     var tableElement = $('#example').DataTable();
@@ -262,7 +284,7 @@ sendButton.addEventListener("click", function () {
       triggerAlert(data.address, "green");
     }
 
-    // populate the Driving Time column
+    // Populate the Driving Time column
     populateDrivingTime(data);
   });
 });
@@ -270,14 +292,14 @@ sendButton.addEventListener("click", function () {
 //------------------------------------------
 let oceanTempVal = document.getElementById('oceanTempVal');
 
-// retrieve and display the expected ocean temperature
+// Retrieve and display the expected ocean temperature
 fetch('/ocean').then(function (response) {
   return response.json();
 })
 .then(function (data) {
   if (data.error) {
     oceanTempVal.innerText = data.error;
-    oceanTempVal.style.fontSize = '15px'
+    oceanTempVal.style.fontSize = '15px';
     oceanTempVal.style.color = "red";
   }
 

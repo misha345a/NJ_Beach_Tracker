@@ -1,3 +1,8 @@
+// import beach names and requests from data.js
+const data = require('./data.js');
+const beachNames = data.beachNames;
+const forecastRequests = data.createForecastRequests();
+
 const axios = require("axios");
 const express = require('express');
 require('dotenv').config();
@@ -8,7 +13,7 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static("public_html"));
 
-//_________________________________________
+//____________________________________________________________________________
 
 // convert Unix, UTC timestamps into a readable form (i.e. 1575909015000 -> 9 Monday)
 function convertUnixUTC(unixTimestamp) {
@@ -36,12 +41,6 @@ function adjustFormatting(arr) {
   return arr
 }
 
-// URLs to retrieve forecasts at various beach locations
-const url_Brigantine_Beach = `https://api.openweathermap.org/data/2.5/onecall?lat=39.4021&lon=-74.3668&exclude=current,minutely,alerts&units=imperial&appid=${process.env.OPENWEATHER_API_KEY}`;
-const url_Atlantic_City_Beach = `https://api.openweathermap.org/data/2.5/onecall?lat=39.3755&lon=-74.4158&exclude=current,minutely,alerts&units=imperial&appid=${process.env.OPENWEATHER_API_KEY}`;
-const url_Ideal_Beach = `https://api.openweathermap.org/data/2.5/onecall?lat=40.4448&lon=-74.1119&exclude=current,minutely,alerts&units=imperial&appid=${process.env.OPENWEATHER_API_KEY}`;
-const url_Beach_Haven= `https://api.openweathermap.org/data/2.5/onecall?lat=39.5593&lon=-74.2432&exclude=current,minutely,alerts&units=imperial&appid=${process.env.OPENWEATHER_API_KEY}`;
-
 //____________________________________________________________________________
 
 app.listen(port, () => {
@@ -50,31 +49,25 @@ app.listen(port, () => {
 
 // FORECAST DATA (OPENWEATHER)
 app.get("/forecast", function (req, res) {
+  
+  // compile a list of all forecasts requests
+  let promises = [];
+  for (let i=0; i<forecastRequests.length; i++) {
+    promises.push(axios.get(forecastRequests[i]));
+  }
 
-  // execute simultaneous requests
-  axios.all([
-    axios.get(url_Brigantine_Beach),
-    axios.get(url_Atlantic_City_Beach),
-    axios.get(url_Ideal_Beach),
-    axios.get(url_Beach_Haven),
-  ])
+  // execute requests simultaneously
+  axios.all(promises)
   .then(response => {
     console.log("Success! Status code was 200 level.");
-
-    let beachNameList = [
-      "Brigantine Beach",
-      "Atlantic City Beach",
-      "Ideal Beach",
-      "Beach Haven",
-    ];
 
     // loop through each beach's API call
     let dataList = [];
     
-    for (let i=0; i<beachNameList.length; i++) {
+    for (let i=0; i<beachNames.length; i++) {
       // and define variables over multiple days
       for (let j=0; j<5; j++) {
-        let beachName = beachNameList[i];
+        let beachName = beachNames[i];
         let date = convertUnixUTC(response[i].data.daily[j].dt);
         let feelsLikeMorn = response[i].data.daily[j].feels_like.morn;
         let feelsLikeDay = response[i].data.daily[j].feels_like.day;
@@ -83,10 +76,10 @@ app.get("/forecast", function (req, res) {
         let windSpeed = response[i].data.daily[j].wind_speed;
         let uvi = response[i].data.daily[j].uvi;
 
-        let travelTime = "";
+        let drivingTime = "";
         let responseList = [
           beachName,
-          travelTime,
+          drivingTime,
           date,
           feelsLikeMorn,
           feelsLikeDay,
@@ -103,8 +96,8 @@ app.get("/forecast", function (req, res) {
     // send the collected API data back to the client-side
     res.json({
       "draw": 1,
-      "recordsTotal": 90,
-      "recordsFiltered": 90,
+      "recordsTotal": 150,
+      "recordsFiltered": 150,
       "data": dataList
     })
   })
@@ -119,7 +112,7 @@ app.get("/forecast", function (req, res) {
 // DRIVING TIMES (MABPOX)
 app.get("/map", function (req, res) {
 
-  // retieve the user's address from the client side
+  // retrieve the user's address from the client side
   let address = req.query['address'];
 
   // encode the address text as a URL-encoded UTF-8 string
@@ -149,31 +142,20 @@ app.get("/map", function (req, res) {
     let geoCoordinates = response.features[0].geometry.coordinates;
     let longitude = geoCoordinates[0];
     let latitude = geoCoordinates[1];
-
     let foundAddress = response.features[0].place_name;
 
-    // here are the Mapbox Directions API requests for each beach
+    // define the Mapbox Directions API requests
     // the start will always be the user's address; only the end or destination will change based on beach location
-    let url_map_Brigantine_Beach = `https://api.mapbox.com/directions/v5/mapbox/driving-traffic/${longitude},${latitude};-74.3668,39.4021?geometries=geojson&access_token=${process.env.MAPBOX_API_KEY}`;
-    let url_map_Atlantic_City_Beach = `https://api.mapbox.com/directions/v5/mapbox/driving-traffic/${longitude},${latitude};-74.4158,39.3755?geometries=geojson&access_token=${process.env.MAPBOX_API_KEY}`;
-    let url_map_Ideal_Beach = `https://api.mapbox.com/directions/v5/mapbox/driving-traffic/${longitude},${latitude};-74.1119,40.4448?geometries=geojson&access_token=${process.env.MAPBOX_API_KEY}`;
-    let url_map_Beach_Haven = `https://api.mapbox.com/directions/v5/mapbox/driving-traffic/${longitude},${latitude};-74.2432,39.5593?geometries=geojson&access_token=${process.env.MAPBOX_API_KEY}`;
-
-    // execute the Mapbox Directions API requests to retrieve the driving-traffic profiles
-    axios.all([
-      axios.get(url_map_Brigantine_Beach),
-      axios.get(url_map_Atlantic_City_Beach),
-      axios.get(url_map_Ideal_Beach),
-      axios.get(url_map_Beach_Haven),
-    ])
+    let mapRequests = data.createMapRequests(longitude, latitude);
+    
+    let mapPromises = [];
+    for (let i=0; i<mapRequests.length; i++) {
+        mapPromises.push(axios.get(mapRequests[i]));
+    }
+    
+    // execute all Mapbox Directions API requests to retrieve the driving-traffic profiles    
+    axios.all(mapPromises)    
     .then(responseArr => {
-
-      let beachNameList = [
-        "Brigantine Beach",
-        "Atlantic City Beach",
-        "Ideal Beach",
-        "Beach Haven",
-      ];
 
       let durationsDict = {};
 
@@ -181,7 +163,7 @@ app.get("/map", function (req, res) {
       for (let i=0; i<responseArr.length; i++) {
         let tripDuration = responseArr[i].data.routes[0].duration_typical;
         tripDuration = Math.round(Number(tripDuration)/60) + " min";
-        durationsDict[beachNameList[i]] = tripDuration; // adds pairs in this format: 'Brigantine Beach':'97 min'
+        durationsDict[beachNames[i]] = tripDuration; // adds pairs in this format: 'Brigantine Beach':'97 min'
       }
       durationsDict['address'] = "Found address at " + foundAddress;
 
@@ -193,7 +175,6 @@ app.get("/map", function (req, res) {
         console.log("Error! Status code was 300, 400, or 500-level.");
         res.json({"error": "Driving times were not found from this origin."});
     });
-
 })
 .catch(function (error) {
     //handle errors

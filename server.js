@@ -60,6 +60,11 @@ app.get("/forecast", function (req, res) {
   axios.all(promises)
   .then(response => {
     console.log("Success! Status code was 200 level.");
+    
+    // check the response's status code
+    if (response[0].status != 200) {
+      throw "Sorry, too many requests already made today. Please check back tomorrow.";
+    }
 
     // loop through each beach's API call
     let dataList = [];
@@ -104,6 +109,7 @@ app.get("/forecast", function (req, res) {
   .catch(function (error) {
     //handle errors
     console.log("Error! Status code was 300, 400, or 500-level.");
+    res.json({"error": error});
   });
 })
 

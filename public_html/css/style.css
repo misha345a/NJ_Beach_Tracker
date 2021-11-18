@@ -19,7 +19,7 @@ body, h5, p, {
 }
 
 #nav-container {
-  border: 2px dashed red;
+  border-bottom: 1px dashed red;
 }
 
 .nav-item {
@@ -75,6 +75,11 @@ body, h5, p, {
 }
 
 /*===== IMAGES =====*/
+#logo {
+  width: 90%;
+  height: auto;
+}
+
 .fixed-background {
   overflow: hidden; /*-- Correction for iOS --*/
 }

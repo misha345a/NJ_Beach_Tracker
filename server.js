@@ -2,6 +2,7 @@
 const data = require('./data.js');
 const beachNames = data.beachNames;
 const forecastRequests = data.createForecastRequests();
+const oceanTempRequest = data.oceanTempRequest;
 
 const axios = require("axios");
 const express = require('express');
@@ -124,12 +125,11 @@ app.get("/map", function (req, res) {
   // encode the address text as a URL-encoded UTF-8 string
   let encodedAddress = encodeURI(address.trim());
 
-  let url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedAddress}.json?country=us&limit=1&proximity=-74.4229%2C39.3643&types=address&access_token=${process.env.MAPBOX_API_KEY}`
-
   // retrieve the origin's coordinates from the Mapbox API using Axios
+  let geoCodingRequest = data.createGeocodingRequest(encodedAddress);
   async function axiosTest() {
     try {
-      const {data:response} = await axios.get(url)
+      const {data:response} = await axios.get(geoCodingRequest)
       return response
     }
     catch (error) {
@@ -191,8 +191,6 @@ app.get("/map", function (req, res) {
 
 //____________________________________________________________________________
 
-let url_oceanTemp = `https://api.stormglass.io/v2/weather/point?lat=39.3696&lng=-74.4017&params=waterTemperature&source=noaa&key=${process.env.STORMGLASS_API_KEY}`
-
 // convert Celsius to Fahrenheit
 function cToF(celsius) {
   var cTemp = celsius;
@@ -213,7 +211,7 @@ function calculateAverage(array) {
 }
 
 app.get("/ocean", function (req, res) {
-  axios.get(url_oceanTemp)
+  axios.get(oceanTempRequest)
   .then(response => {
     if (response.status != 200) {
       throw "Feature currently unavailable. Please try again later.";

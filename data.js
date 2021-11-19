@@ -140,6 +140,11 @@ function createForecastRequests() {
   return forecastRequests;
 }
 
+// create a geocoding request to Mapbox
+function createGeocodingRequest(encodedAddress) {
+  return `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedAddress}.json?country=us&limit=1&proximity=-74.4229%2C39.3643&types=address&access_token=${process.env.MAPBOX_API_KEY}`
+}
+
 // create all driving-time requests to Mapbox
 function createMapRequests(longitude, latitude) {
   let mapRequests = [];
@@ -154,4 +159,7 @@ function createMapRequests(longitude, latitude) {
   return mapRequests;
 }
 
-module.exports = { beachNames, createForecastRequests, createMapRequests};
+// create an ocean temperature request to StormGlass
+const oceanTempRequest  = `https://api.stormglass.io/v2/weather/point?lat=39.3696&lng=-74.4017&params=waterTemperature&source=noaa&key=${process.env.STORMGLASS_API_KEY}`
+
+module.exports = {beachNames, createForecastRequests, createGeocodingRequest, createMapRequests, oceanTempRequest};

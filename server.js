@@ -127,7 +127,7 @@ app.get("/map", function (req, res) {
 
   // retrieve the origin's coordinates from the Mapbox API using Axios
   let geoCodingRequest = data.createGeocodingRequest(encodedAddress);
-  async function axiosTest() {
+  async function axiosGeocoding() {
     try {
       const {data:response} = await axios.get(geoCodingRequest)
       return response
@@ -138,7 +138,7 @@ app.get("/map", function (req, res) {
   }
 
   // longitude/latitude data is required for the Mapbox Directions API requests
-  axiosTest().then(response => {
+  axiosGeocoding().then(response => {
 
     // check if response exists
     if (response.features.length == 0) {

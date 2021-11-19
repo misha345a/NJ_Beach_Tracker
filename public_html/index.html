@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>NJ Beach Tracker | Weather Forecasts</title>
   <link rel="shortcut icon" href="img/favicon.ico">
@@ -12,14 +12,18 @@
   <!-- Style CSS -->
   <link rel="stylesheet" href="css/style.css">
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700&display=swap" rel="stylesheet">
-
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <script src="https://kit.fontawesome.com/c9b6e045a4.js" crossorigin="anonymous"></script>
+  <!-- Bootstrap 5 JS -->
+  <script src="js/bootstrap.min.js"></script>
 </head>
 
 <body>
-
   <!-- NAVIGATION -->
-  <nav class="navbar bg-light navbar-light navbar-expand-lg">
+  <nav class="navbar navbar-light navbar-expand-lg">
     <div class="container" id="nav-container">
 
         <a href="index.html" class="navbar-brand"><img src="img/logo.PNG"
@@ -45,15 +49,14 @@
   <div class="top-buffer1"></div>
   <form>
     <div class="container">
-      <label class="sr-only" for="inlineFormInput">Enter your address to populate driving times:</label>
-
+      <label for="inlineFormInput">Enter your address to populate driving times:</label>
       <div class="col-auto">
         <input type="text" class="form-control-sm" id="inlineFormInput" placeholder="205 n 34 st philadelphia pa 19104" required>
         <input type="submit" class="btn btn-warning btn-md" id="submitButton">
         <span id="oceanTempSpan">Expected Ocean Temperature:&nbsp;<a id="oceanTempVal">&nbsp;&nbsp;&nbsp;&nbsp;</a></span>
       </div>
       <div>
-        <span style="font-size:11pt; visibility:hidden;" id='alertMessage'></span>
+        <span style="font-size:11pt; visibility:hidden;" id='alertMessage'>Message placeholder.</span>
       </div>
     </div>
   </form>
@@ -189,6 +192,11 @@ $(document).ready(function() {
         }
     });
 
+    // Edit the width of the table search field and add a placeholder
+    $('.dataTables_filter input[type="search"]').
+      attr('placeholder','Try entering a beach name').
+      css({'width':'200px','display':'inline-block'});
+
     // Define a reference to the DataTable
     var tableElement = $('#example').DataTable();
 
@@ -224,8 +232,7 @@ $(document).ready(function() {
   tableElement.draw();
 });
 
-  //---------------------------------------------------------------------------------
-
+//---------------------------------------------------------------------
 // Loop through the Driving Time column cells and update values
 function populateDrivingTime (dict) {
 
@@ -238,8 +245,7 @@ function populateDrivingTime (dict) {
 table.draw();
 }
 
-// ------------------------------------------------------------
-
+//---------------------------------------------------------------------
 // Prevent the form from refreshing the page once Submit is clicked
 $(document).ready(function() {
   $('form').on('submit', function(event) {
@@ -289,7 +295,7 @@ sendButton.addEventListener("click", function () {
   });
 });
 
-//------------------------------------------
+//---------------------------------------------------------------------
 let oceanTempVal = document.getElementById('oceanTempVal');
 
 // Retrieve and display the expected ocean temperature
@@ -305,8 +311,6 @@ fetch('/ocean').then(function (response) {
 
   oceanTempVal.innerText = data.oceanTemp;
 })
-
-
 </script>
 
   <div class="top-buffer2"></div>
@@ -348,23 +352,45 @@ fetch('/ocean').then(function (response) {
       <img src="img/uv-index.PNG" class="headerIcons">
       <br>
       UV numbers will typically range from 1 to 11. The higher the UV index, the faster your skin can burn. <br>
-      UV indexes that are moderate (3-5) to high (6-7) may be best for tanning purposes.
+      UV indexes that are moderate (3-5) to high (6-7) may be best for tanning purposes. 
+      <br><br>
     </p>
   </div>
 
+  <footer>
+    <div class="container">
+    <div class="row padding">
+      <div class="col-9">
+        <span style="font-size: 1.5em">Built with&nbsp</span>
+        <span style="font-size: 2.5em; color: #68A063;">
+          <i class="fab fa-node"></i>
+        </span>
+        <span style="font-size: 2.5em; color: #E34C26;">
+          <i class="fab fa-html5"></i>
+        </span>
+        <span style="font-size: 2.5em; color: #264DE4;">
+          <i class="fab fa-css3-alt"></i>
+        </span>
+        <span style="font-size: 2.5em; color: #8977A3;">
+          <i class="fab fa-bootstrap"></i>
+        </span>
+      </div>
 
-  <!-- -------------------------------------------------------------->
-  <!-- Script Source Files -->
-
-	<!-- jQuery -->
-	<!-- <script src="js/jquery-3.5.1.min.js"></script> -->
-	<!-- Bootstrap 5 JS -->
-	<script src="js/bootstrap.min.js"></script>
-	<!-- Popper JS -->
-	<!-- <script src="js/popper.min.js"></script> -->
-	<!-- Font Awesome -->
-	<!-- <script src="js/all.min.js"></script> -->
-
-	<!-- End Script Source Files -->
+      <div class="col-3">
+        <span style="font-size: 1.5em">Connect on&nbsp</span>
+        <span style="font-size: 2.5em; margin-right: 2px;">
+          <a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/michaelmarkin/"><i class="fab fa-linkedin"></i></a>
+        </span>
+        <span style="font-size: 2.5em;  margin-right: 2px;">
+          <a target="_blank" rel="noopener noreferrer" href="https://github.com/misha345a"><i class="fab fa-github-square"></i></a>
+        </span>
+        <span style="font-size: 2.5em; ">
+          <a target="_blank" rel="noopener noreferrer" href="https://medium.com/@michaelmarkin"><i class="fab fa-medium"></i></a>
+        </span>
+       </div>
+     </div>
+    </div>
+    </div>
+  </footer>
 </body>
 </html>

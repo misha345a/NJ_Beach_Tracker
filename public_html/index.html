@@ -239,10 +239,8 @@ function populateDrivingTime (dict) {
   // Get the beach name from column 1 and update cells with driving times
   for (let i=0; i<table.rows().count(); i++) {
     let beachName = table.cell(i,0).data()
-
-    table.cell(i, 1).data(dict[beachName])
+    table.cell(i, 1).data(dict[beachName]).draw();
   }
-table.draw();
 }
 
 //---------------------------------------------------------------------

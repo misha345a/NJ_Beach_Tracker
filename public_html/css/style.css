@@ -78,9 +78,13 @@ body, h5, p, th, label, span, li, div {
   margin-left: 15px;
 }
 
-/*============= ADDRESS INPUT =============*/
+/*============= USER INPUT AREA =============*/
 #inlineFormInput {
   width: 18rem;
+}
+
+#radioButtons {
+  margin-left: 2%;
 }
 
 /*===== IMAGES =====*/

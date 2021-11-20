@@ -175,21 +175,46 @@ $(document).ready(function() {
         scrollCollapse: true,
         searching: true,
         order: [[ 1, 'desc' ], [4, 'desc' ]],
-            columns: [
-                { title: "Beach" },
-                { title: "Driving Time" },
-                { title: "Day" },
-                { title: "Morning" },
-                { title: "Afternoon" },
-                { title: "Description" },
-                { title: "Chance of Rain" },
-                { title: "Wind Speed" },
-                { title: "UV Index" },
-              ],
         ajax: {
           dataType: "JSON",
           url: "/forecast",
-        }
+        },
+        "columnDefs": [
+          {
+            "targets": 1,
+            "render": function (data, type) {
+              if (type === 'display') {
+                if (data != "") {
+                  return data + " min";
+                }
+                return data;
+              }
+              return data;
+            }
+          },
+          {
+            "targets": 7,
+            "render": function (data, type) {
+              if (type === 'display' || type === 'filter') {
+                return data + " mph";
+              }
+              return data;
+            },
+            "width": "9%"
+          },
+         {
+           "targets": 2,
+           "width": "12%"
+         },
+         {
+           "targets": [0, 5],
+           "width": "15%"
+         },
+         {
+           "targets": [6, 8],
+           "width": "9%"
+         }
+        ]
     });
 
     // Edit the width of the table search field and add a placeholder
@@ -350,7 +375,7 @@ fetch('/ocean').then(function (response) {
       <img src="img/uv-index.PNG" class="headerIcons">
       <br>
       UV numbers will typically range from 1 to 11. The higher the UV index, the faster your skin can burn. <br>
-      UV indexes that are moderate (3-5) to high (6-7) may be best for tanning purposes. 
+      UV indexes that are moderate (3-5) to high (6-7) may be best for tanning purposes.
       <br><br>
     </p>
   </div>
@@ -358,7 +383,7 @@ fetch('/ocean').then(function (response) {
   <footer>
     <div class="container">
     <div class="row padding">
-      <div class="col-9">
+      <div class="col-8">
         <span style="font-size: 1.5em">Built with&nbsp</span>
         <span style="font-size: 2.5em; color: #68A063;">
           <i class="fab fa-node"></i>
@@ -374,7 +399,7 @@ fetch('/ocean').then(function (response) {
         </span>
       </div>
 
-      <div class="col-3">
+      <div class="col-4">
         <span style="font-size: 1.5em">Connect on&nbsp</span>
         <span style="font-size: 2.5em; margin-right: 2px;">
           <a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/michaelmarkin/"><i class="fab fa-linkedin"></i></a>

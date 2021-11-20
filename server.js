@@ -37,7 +37,7 @@ function adjustFormatting(arr) {
   arr[4] = Math.round(arr[4])+'°F'; // round feelsLikeDay
   arr[5] = toTitleCase(arr[5]); // title case description
   arr[6] = Math.round(arr[6])+'%'; // round percentage of precipitation
-  arr[7] = Math.round(arr[7])+' mph'; // round wind speeds
+  arr[7] = Math.round(arr[7]); // round wind speeds
   arr[8] = Math.round(arr[8]); // round UV Index 
   return arr
 }
@@ -168,7 +168,7 @@ app.get("/map", function (req, res) {
       // format the driving times into minutes
       for (let i=0; i<responseArr.length; i++) {
         let tripDuration = responseArr[i].data.routes[0].duration_typical;
-        tripDuration = Math.round(Number(tripDuration)/60) + " min";
+        tripDuration = Math.round(Number(tripDuration)/60);
         durationsDict[beachNames[i]] = tripDuration; // adds pairs in this format: 'Brigantine Beach':'97 min'
       }
       durationsDict['address'] = "Found address at " + foundAddress;

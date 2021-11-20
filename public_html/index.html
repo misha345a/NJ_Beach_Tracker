@@ -53,6 +53,23 @@
       <div class="col-auto">
         <input type="text" class="form-control-sm" id="inlineFormInput" placeholder="205 n 34 st philadelphia pa 19104" required>
         <input type="submit" class="btn btn-warning btn-md" id="submitButton">
+
+        <span id="radioButtons">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="flexRadio" id="fahrenheitRadio" onclick="convertTemp();" checked>
+            <label class="form-check-label" for="fahrenheitRadio">
+              Fahrenheit
+            </label>
+          </div>
+
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="flexRadio" id="celsiusRadio" onclick="convertTemp();">
+            <label class="form-check-label" for="celsiusRadio">
+              Celsius
+            </label>
+          </div>
+        </span>
+
         <span id="oceanTempSpan">Expected Ocean Temperature:&nbsp;<a id="oceanTempVal">&nbsp;&nbsp;&nbsp;&nbsp;</a></span>
       </div>
       <div>
@@ -69,7 +86,6 @@
     <select id="categoryFilter" class="form-select"></select>
   </label>
 </div>
-
 
 <script>
 
@@ -193,6 +209,17 @@ $(document).ready(function() {
             }
           },
           {
+            "targets": [3,4],
+            "render": function (data, type) {
+              if (type === 'sort') {
+                const regex = /°(F|C)/i;
+                let sortableTemp = Number(data.replace(regex, '')) + 100;
+                return sortableTemp;
+              }
+              return data;
+            }
+          },
+          {
             "targets": 7,
             "render": function (data, type) {
               if (type === 'display' || type === 'filter') {
@@ -263,8 +290,8 @@ function populateDrivingTime (dict) {
 
   // Get the beach name from column 1 and update cells with driving times
   for (let i=0; i<table.rows().count(); i++) {
-    let beachName = table.cell(i,0).data()
-    table.cell(i, 1).data(dict[beachName]).draw();
+    let beachName = table.cell(i,0).data();
+    table.cell(i,1).data(dict[beachName]).draw();
   }
 }
 
@@ -334,6 +361,53 @@ fetch('/ocean').then(function (response) {
 
   oceanTempVal.innerText = data.oceanTemp;
 })
+
+//---------------------------------------------------------------------
+// Convert Celsius to Fahrenheit
+function cToF(celsius) {
+  let cToFahr = celsius * 9/5 + 32;
+  return Math.round(cToFahr)+'°F';
+}
+
+// Convert Fahrenheit to Celsius
+function fToC(fahrenheit) {
+  let fToCel = (fahrenheit - 32) * 5/9;
+  return Math.round(fToCel)+'°C';
+}
+
+// Loop through both Temperature columns and update values
+function populateTemperatures(func) {
+
+  // Get the current value and update cells with the converted temperature
+  for (let i=0; i<table.rows().count(); i++) {
+    let morningTemp = table.cell(i,3).data();
+    let afternoonTemp = table.cell(i,4).data();
+
+    const regex = /°(F|C)/i;
+    morningTemp = morningTemp.replace(regex, '');
+    afternoonTemp = afternoonTemp.replace(regex, '');
+
+    table.cell(i,3).data(func(morningTemp));
+    table.cell(i,4).data(func(afternoonTemp));
+  }
+  table.draw()
+}
+
+const fahrenheitRadio = document.getElementById('fahrenheitRadio');
+const celsiusRadio = document.getElementById('celsiusRadio');
+let currentRadioFlag = "fahrenheit"; // Flag to track the current radio selection
+
+// Convert temperature accordingly once radio button is clicked
+function convertTemp() {
+  if (fahrenheitRadio.checked==true && currentRadioFlag=="celsius") {
+    populateTemperatures(cToF);
+    currentRadioFlag = "fahrenheit";
+  }
+  if (celsiusRadio.checked==true && currentRadioFlag=="fahrenheit") {
+    populateTemperatures(fToC);
+    currentRadioFlag = "celsius";
+  }
+}
 </script>
 
   <div class="top-buffer2"></div>

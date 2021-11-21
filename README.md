@@ -11,7 +11,8 @@ might be a perfect 88°F and clear skies just 30 minutes away!
 
 The site provides a live 5-day report of weather forecast information for 28 of New Jersey's most popular beaches. Driving times to each beach can also be compared once an address is entered.
 
-Check out the full site here!<br>
+Check out the full site here! (<i>best viewed with Google Chrome on desktop</i>)
+<br> 
 https://nj-beach-tracker.herokuapp.com/
 <br><br><br>
 ![Site_Walkthrough](https://user-images.githubusercontent.com/84154105/142782379-896c1647-28dc-47dc-ba37-f808b3a602df.gif)

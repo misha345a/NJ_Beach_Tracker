@@ -70,7 +70,7 @@
           </div>
         </span>
 
-        <span id="oceanTempSpan">Expected Ocean Temperature:&nbsp;<a id="oceanTempVal">&nbsp;&nbsp;&nbsp;&nbsp;</a></span>
+        <span id="oceanTempSpan">Expected Ocean Water Temperature:&nbsp;<a id="oceanTempVal">&nbsp;&nbsp;&nbsp;&nbsp;</a></span>
       </div>
       <div>
         <span style="font-size:11pt; visibility:hidden;" id='alertMessage'>Message placeholder.</span>
@@ -393,6 +393,14 @@ function populateTemperatures(func) {
   table.draw()
 }
 
+// Convert the ocean water temperature value
+function convertOceanTempVal(func) {
+  let temp = oceanTempVal.innerText;
+  const regex = /°(F|C)/i;
+  temp = temp.replace(regex, '');
+  oceanTempVal.innerText = func(temp);
+}
+
 const fahrenheitRadio = document.getElementById('fahrenheitRadio');
 const celsiusRadio = document.getElementById('celsiusRadio');
 let currentRadioFlag = "fahrenheit"; // Flag to track the current radio selection
@@ -401,10 +409,12 @@ let currentRadioFlag = "fahrenheit"; // Flag to track the current radio selectio
 function convertTemp() {
   if (fahrenheitRadio.checked==true && currentRadioFlag=="celsius") {
     populateTemperatures(cToF);
+    convertOceanTempVal(cToF);
     currentRadioFlag = "fahrenheit";
   }
   if (celsiusRadio.checked==true && currentRadioFlag=="fahrenheit") {
     populateTemperatures(fToC);
+    convertOceanTempVal(fToC);
     currentRadioFlag = "celsius";
   }
 }
@@ -423,15 +433,14 @@ function convertTemp() {
       All temperatures are expressed as "feels-like" temperature, which takes into account humidity levels.
       <br><br>
       85-90&deg;F is said to be the perfect beach temperature. <br>
-      Generally, anything below 75&deg;F will be too chilly for a normal shorts and t-shirt beach day,
-      especially if it is cloudy as well.
+      Generally, anything below 75&deg;F will be too chilly, especially if it is cloudy as well.
       <br><br>
       <b><u>Ocean Temperature</u></b>
       <img src="img/ocean.PNG" class="headerIcons">
       <br>
-      The ocean temperature is derived by averaging the hourly forecast of Atlantic Ocean temperatures near the Atlantic City coast. <br>
+      The ocean temperature is derived by averaging the hourly forecast of water temperatures near the Atlantic City coast. <br>
       For comfortable swimming at the beach, ocean temperature should be above 75&deg;F. <br>
-      Historically, beach waters will be warmest in July and August.
+      Historically, beach waters are warmest in July and August.
       <br><br>
       <b><u>Chance of Rain</u></b>
       <img src="img/rain.PNG" class="headerIcons">
